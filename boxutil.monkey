@@ -9,6 +9,7 @@ Public
 
 ' Preprocessor related:
 #BOXUTIL_IMPLEMENTED = True
+#BOXUTIL_STANDARD_UNBOXING = False
 
 '#MONKEYLANG_EXPLICIT_BOXES = True
 
@@ -61,19 +62,35 @@ End
 
 ' Box versions of 'InnerValue' (Wrappers of the 'SharedBoxRoutines' class's implementation):
 Function InnerValue:Int(IO:IntObject)
-	Return SharedBoxRoutines<IntObject>.AsInt(IO) ' IO.ToInt() ' IO.value
+	#If Not BOXUTIL_STANDARD_UNBOXING
+		Return SharedBoxRoutines<IntObject>.AsInt(IO) ' IO.ToInt() ' IO.value
+	#Else
+		Return UnboxInt(IO)
+	#End
 End
 
 Function InnerValue:Float(FO:FloatObject)
-	Return SharedBoxRoutines<FloatObject>.AsFloat(FO) ' FO.ToFloat() ' FO.value
+	#If Not BOXUTIL_STANDARD_UNBOXING
+		Return SharedBoxRoutines<FloatObject>.AsFloat(FO) ' FO.ToFloat() ' FO.value
+	#Else
+		Return UnboxFloat(FO)
+	#End
 End
 
 Function InnerValue:Bool(BO:BoolObject)
-	Return SharedBoxRoutines<BoolObject>.AsBool(BO) ' BO.ToBool() ' BO.value
+	#If Not BOXUTIL_STANDARD_UNBOXING
+		Return SharedBoxRoutines<BoolObject>.AsBool(BO) ' BO.ToBool() ' BO.value
+	#Else
+		Return UnboxBool(BO)
+	#End
 End
 
 Function InnerValue:String(SO:StringObject)
-	Return SharedBoxRoutines<StringObject>.AsString(SO) ' SO.ToString() ' SO.value
+	#If Not BOXUTIL_STANDARD_UNBOXING
+		Return SharedBoxRoutines<StringObject>.AsString(SO) ' SO.ToString() ' SO.value
+	#Else
+		Return UnboxString(SO)
+	#End
 End
 
 ' Classes:
@@ -93,7 +110,11 @@ Class SharedBoxRoutines<Type>
 	End
 	
 	Function InnerValueOfArrayBox:ArrayObject<Type>(AO:ArrayObject<Type>)
-		Return AO.ToArray()
+		#If Not BOXUTIL_STANDARD_UNBOXING
+			Return AO.ToArray()
+		#Else
+			Return ArrayBoxer<Type>.Unbox(AO)
+		#End
 	End
 	
 	' Conversion commands:
